@@ -5,6 +5,8 @@ coverage/
 .DS_Store
 *.log
 .env*
+*.env
+vercel*.env
 !.env.example
 .venv/
 venv/
@@ -18,6 +20,8 @@ __pycache__/
 
 # Backend specifics
 backend/.env*
+*.env
+vercel*.env
 !backend/.env.example
 backend/.venv/
 backend/venv/
