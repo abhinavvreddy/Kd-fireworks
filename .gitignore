@@ -1,0 +1,26 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local IDE / Studio cache
+.aistudio/
+.antigravity/
+
+# Backend specifics
+backend/.env*
+!backend/.env.example
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/

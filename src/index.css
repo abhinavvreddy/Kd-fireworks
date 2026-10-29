@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/noto-sans-telugu.woff2') format('woff2');
+  unicode-range: U+0951-0952, U+0964-0965, U+0B83, U+0C00-0C7F, U+1CD5-1CD6, U+1CD8, U+1CDA, U+1CF2, U+200C-200D, U+25CC;
+}
+
+.font-telugu {
+  font-family: 'Noto Sans Telugu', 'Gautami', 'Vani', 'Nirmala UI', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  :root {
+    --font-serif: 'Playfair Display', 'Noto Sans Telugu', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', 'Noto Sans Telugu', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Plus Jakarta Sans', 'Noto Sans Telugu', system-ui, -apple-system, sans-serif, monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0B132B;
+    color: #F8FAFC;
+  }
+
+  h1, h2, .font-display {
+    font-family: var(--font-serif);
+  }
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.card-navy {
+  background-color: #111A35;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-navy:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+}
