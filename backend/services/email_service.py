@@ -68,7 +68,7 @@ class EmailService:
 
             # Admin link
             order_id = str(order.get("_id") or order.get("id", ""))
-            frontend_url = Config.FRONTEND_ORIGIN.rstrip("/")
+            frontend_url = Config.get_frontend_url()
             admin_order_url = f"{frontend_url}/admin?orderId={order_id}"
 
             # Build items rows

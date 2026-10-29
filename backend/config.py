@@ -45,6 +45,24 @@ class Config:
         return cls.ENVIRONMENT.lower() == "production"
 
     @classmethod
+    def get_frontend_url(cls):
+        """
+        Returns the canonical, fully-qualified frontend origin URL (e.g. https://kd-fireworks.vercel.app).
+        Safely resolves wildcard '*', empty values, or Vercel production system variables.
+        """
+        origin = (cls.FRONTEND_ORIGIN or "").strip().rstrip("/")
+        if origin and origin != "*":
+            if not origin.startswith("http://") and not origin.startswith("https://"):
+                return f"https://{origin}"
+            return origin
+
+        vercel_prod = os.getenv("VERCEL_PROJECT_PRODUCTION_URL") or os.getenv("VERCEL_URL")
+        if vercel_prod:
+            return f"https://{vercel_prod.rstrip('/')}"
+
+        return "https://kd-fireworks.vercel.app"
+
+    @classmethod
     def validate(cls):
         warnings = []
         if not cls.MONGODB_URI:
