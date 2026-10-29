@@ -39,7 +39,9 @@ export class ApiClient {
   private currentUser: User | null = null;
 
   constructor() {
-    this.baseUrl = getStoredItem(STORAGE_KEYS.API_URL, LEGACY_STORAGE_KEYS.API_URL) || (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5001/api/v1';
+    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const defaultFallback = isLocalhost ? 'http://localhost:5001/api/v1' : '/api/v1';
+    this.baseUrl = getStoredItem(STORAGE_KEYS.API_URL, LEGACY_STORAGE_KEYS.API_URL) || (import.meta as any).env?.VITE_API_BASE_URL || defaultFallback;
     this.token = getStoredItem(STORAGE_KEYS.TOKEN, LEGACY_STORAGE_KEYS.TOKEN);
     const savedUser = getStoredItem(STORAGE_KEYS.USER, LEGACY_STORAGE_KEYS.USER);
     if (savedUser) {
@@ -117,14 +119,20 @@ export class ApiClient {
   }
 
   public async checkBackendHealth(): Promise<{ isLive: boolean; message: string }> {
-    const candidates = [
-      this.baseUrl,
-      'http://localhost:5001/api/v1',
-      'http://127.0.0.1:5001/api/v1',
-      'http://localhost:5000/api/v1',
-      'http://127.0.0.1:5000/api/v1',
-      '/api/v1',
-    ];
+    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const candidates = isLocalhost
+      ? [
+          this.baseUrl,
+          'http://localhost:5001/api/v1',
+          'http://127.0.0.1:5001/api/v1',
+          'http://localhost:5000/api/v1',
+          '/api/v1',
+        ]
+      : [
+          '/api/v1',
+          this.baseUrl,
+          'http://localhost:5001/api/v1',
+        ];
     const uniqueCandidates = Array.from(new Set(candidates));
 
     for (const url of uniqueCandidates) {
