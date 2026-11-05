@@ -211,6 +211,18 @@ export const ProductDetailPage: React.FC = () => {
 
           {/* Purchase Controls & Quantity Steppers */}
           <div className="border-t border-slate-800 pt-6 space-y-4">
+            {inCartItem && (
+              <div className="p-2.5 rounded-lg bg-amber-400/10 border border-amber-400/30 flex items-center justify-between text-xs text-amber-300">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Check className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{inCartItem.quantity} already in your Bag</span>
+                </span>
+                <Link to="/cart" className="underline font-bold text-amber-400 hover:text-amber-300">
+                  View Bag →
+                </Link>
+              </div>
+            )}
+
             {!isOutOfStock && (
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-300">Select Quantity:</span>
