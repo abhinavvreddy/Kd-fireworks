@@ -13,7 +13,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { Order, OrderStatus } from '../types/index.ts';
-import { formatRupee, formatDateTime } from '../utils/pureLogic.ts';
+import { formatRupee, formatDateTime, pluralItems } from '../utils/pureLogic.ts';
 
 interface OrderTrackingViewProps {
   orders: Order[];
@@ -164,7 +164,7 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
                   </div>
 
                   <div className="mt-1 text-[11px] text-slate-400 font-mono">
-                    {formatDateTime(ord.createdAt)} · {ord.items.length} items
+                    {formatDateTime(ord.createdAt)} · {pluralItems(ord.items.length)}
                   </div>
                 </div>
               );

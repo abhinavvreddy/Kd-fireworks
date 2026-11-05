@@ -16,7 +16,7 @@ import {
 import { Order, OrderStatus } from '../types/index.ts';
 import { api } from '../api/client.ts';
 import { useStore } from '../context/StoreContext.tsx';
-import { formatRupee, formatDateTime } from '../utils/pureLogic.ts';
+import { formatRupee, formatDateTime, pluralItems } from '../utils/pureLogic.ts';
 
 export const OrderTrackingPage: React.FC = () => {
   const { currentUser } = useStore();
@@ -178,7 +178,7 @@ export const OrderTrackingPage: React.FC = () => {
                   </div>
 
                   <div className="mt-1 text-[11px] text-slate-400 font-mono">
-                    {formatDateTime(ord.createdAt)} · {ord.items.length} items
+                    {formatDateTime(ord.createdAt)} · {pluralItems(ord.items.length)}
                   </div>
                 </div>
               );

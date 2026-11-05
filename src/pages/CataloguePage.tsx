@@ -4,6 +4,7 @@ import { Sparkles, Search, Filter, ShoppingBag, ArrowRight } from 'lucide-react'
 import { Product } from '../types/index.ts';
 import { api } from '../api/client.ts';
 import { useStore } from '../context/StoreContext.tsx';
+import { pluralItems } from '../utils/pureLogic.ts';
 import { ProductCard } from '../components/ProductCard.tsx';
 
 const CATEGORIES = [
@@ -105,6 +106,7 @@ export const CataloguePage: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => updateParam('sort', e.target.value)}
+            aria-label="Sort products by"
             className="w-full sm:w-auto px-3 py-2 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-sans"
           >
             <option value="featured">Sort: Featured Collection</option>
@@ -190,7 +192,7 @@ export const CataloguePage: React.FC = () => {
             className="px-5 py-3 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-2xl shadow-amber-950/80 active:scale-95 transition-all"
           >
             <ShoppingBag className="w-4 h-4 text-slate-950" />
-            <span>View Bag ({cartCount} items)</span>
+            <span>View Bag ({pluralItems(cartCount)})</span>
             <ArrowRight className="w-4 h-4 text-slate-950" />
           </Link>
         </div>

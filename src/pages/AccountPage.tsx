@@ -200,8 +200,12 @@ export const AccountPage: React.FC = () => {
             </div>
 
             <button
-              onClick={logout}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/30 hover:bg-rose-950/80 transition-colors flex items-center gap-1.5"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                logout();
+              }}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/30 hover:bg-rose-950/80 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>

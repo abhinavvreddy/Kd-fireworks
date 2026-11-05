@@ -72,7 +72,9 @@ export const ProductDetailPage: React.FC = () => {
   }
 
   const discount = calculateDiscount(product.mrp, product.sellingPrice);
-  const isOutOfStock = product.stockQuantity <= 0;
+  const hasFiniteStock = Number.isFinite(product.stockQuantity);
+  const isOutOfStock = hasFiniteStock && product.stockQuantity <= 0;
+  const maxStock = hasFiniteStock && product.stockQuantity > 0 ? product.stockQuantity : 99;
   const inCartItem = cartItems.find((i) => i.product.id === product.id);
 
   const handleAddAndStay = () => {
@@ -214,6 +216,7 @@ export const ProductDetailPage: React.FC = () => {
                 <span className="text-xs font-medium text-slate-300">Select Quantity:</span>
                 <div className="flex items-center border border-slate-700 rounded-lg bg-slate-900">
                   <button
+                    type="button"
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
                     className="p-2.5 text-slate-400 hover:text-white transition-colors"
                     aria-label="Decrease quantity"
@@ -224,7 +227,8 @@ export const ProductDetailPage: React.FC = () => {
                     {qty}
                   </span>
                   <button
-                    onClick={() => setQty((q) => Math.min(product.stockQuantity, q + 1))}
+                    type="button"
+                    onClick={() => setQty((q) => Math.min(maxStock, q + 1))}
                     className="p-2.5 text-slate-400 hover:text-white transition-colors"
                     aria-label="Increase quantity"
                   >
@@ -237,6 +241,7 @@ export const ProductDetailPage: React.FC = () => {
             {/* CTAs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
+                type="button"
                 onClick={handleAddAndStay}
                 disabled={isOutOfStock}
                 className="w-full py-3 px-4 rounded-lg text-xs font-bold bg-slate-800 text-amber-300 hover:bg-slate-700 border border-amber-500/30 transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50"
@@ -246,6 +251,7 @@ export const ProductDetailPage: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={handleAddAndCheckout}
                 disabled={isOutOfStock}
                 className="w-full py-3 px-4 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg shadow-amber-950/60 flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50"

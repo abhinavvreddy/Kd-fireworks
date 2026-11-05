@@ -203,11 +203,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <button
-              onClick={() => {
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
                 onLogout();
                 onClose();
               }}
-              className="w-full py-2.5 rounded-lg text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/30 hover:bg-rose-950/80 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-lg text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/30 hover:bg-rose-950/80 transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>

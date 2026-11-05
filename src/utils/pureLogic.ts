@@ -107,6 +107,13 @@ export function canTransitionStatus(
 }
 
 /**
+ * Formats a count with correct singular/plural ("1 item", "3 items")
+ */
+export function pluralItems(count: number): string {
+  return `${count} ${count === 1 ? 'item' : 'items'}`;
+}
+
+/**
  * Formats a number to Indian Rupee representation (₹) with en-IN locale
  */
 export function formatRupee(amount: number): string {

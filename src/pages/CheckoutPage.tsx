@@ -17,7 +17,7 @@ import {
 import { useStore } from '../context/StoreContext.tsx';
 import { api } from '../api/client.ts';
 import { GoogleSignInButton } from '../components/GoogleSignInButton.tsx';
-import { calculateCartTotals, formatRupee, validateCommunityAndBlock } from '../utils/pureLogic.ts';
+import { calculateCartTotals, formatRupee, validateCommunityAndBlock, pluralItems } from '../utils/pureLogic.ts';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
@@ -81,8 +81,9 @@ export const CheckoutPage: React.FC = () => {
 
   const { subtotal, deliveryFee, total, meetsMinimum } = calculateCartTotals(
     cartItems,
-    selectedCommunity?.deliveryFee || 50,
-    selectedCommunity?.minimumOrderAmount || 1000
+    // Nullish coalescing: free-delivery communities have deliveryFee === 0 and must not fall back to ₹50.
+    selectedCommunity?.deliveryFee ?? 0,
+    selectedCommunity?.minimumOrderAmount ?? 1000
   );
 
   // In-checkout Google sign-in
@@ -604,7 +605,7 @@ export const CheckoutPage: React.FC = () => {
           </div>
 
           <h2 className="text-base font-serif font-bold text-white">
-            Order Bill Summary ({cartItems.length} items)
+            Order Bill Summary ({pluralItems(cartItems.length)})
           </h2>
 
           <div className="divide-y divide-slate-800 bg-slate-900/60 rounded-xl overflow-hidden border border-slate-800 text-xs">

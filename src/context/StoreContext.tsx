@@ -87,15 +87,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const addToCart = (product: Product, quantity: number = 1) => {
+    const hasFiniteStock = Number.isFinite(product.stockQuantity);
+    const maxStock = hasFiniteStock && product.stockQuantity > 0 ? product.stockQuantity : 999;
+    const qtyToAdd = Math.max(1, quantity);
+
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
-        const newQty = Math.min(product.stockQuantity, existing.quantity + quantity);
+        const newQty = Math.min(maxStock, existing.quantity + qtyToAdd);
         return prev.map((item) =>
           item.product.id === product.id ? { ...item, quantity: newQty } : item
         );
       }
-      return [...prev, { product, quantity: Math.min(product.stockQuantity, quantity) }];
+      return [...prev, { product, quantity: Math.min(maxStock, qtyToAdd) }];
     });
   };
 
@@ -123,6 +127,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const logout = () => {
     api.logout();
     setCurrentUser(null);
+    if (typeof window !== 'undefined' && window.google?.accounts?.id?.disableAutoSelect) {
+      try {
+        window.google.accounts.id.disableAutoSelect();
+      } catch (e) {
+        console.warn('Failed to disable Google auto-select:', e);
+      }
+    }
   };
 
   return (

@@ -21,7 +21,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   if (!product) return null;
 
   const discount = calculateDiscount(product.mrp, product.sellingPrice);
-  const isOutOfStock = product.stockQuantity <= 0;
+  const hasFiniteStock = Number.isFinite(product.stockQuantity);
+  const isOutOfStock = hasFiniteStock && product.stockQuantity <= 0;
+  const maxStock = hasFiniteStock && product.stockQuantity > 0 ? product.stockQuantity : 99;
 
   const handleAdd = () => {
     if (isOutOfStock) return;
@@ -147,6 +149,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               {!isOutOfStock && (
                 <div className="flex items-center border border-slate-700 rounded-lg bg-slate-900">
                   <button
+                    type="button"
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
                     className="p-2 text-slate-300 hover:text-white transition-colors"
                     aria-label="Decrease quantity"
@@ -157,7 +160,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     {qty}
                   </span>
                   <button
-                    onClick={() => setQty((q) => Math.min(product.stockQuantity, q + 1))}
+                    type="button"
+                    onClick={() => setQty((q) => Math.min(maxStock, q + 1))}
                     className="p-2 text-slate-300 hover:text-white transition-colors"
                     aria-label="Increase quantity"
                   >
@@ -167,6 +171,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               )}
 
               <button
+                type="button"
                 onClick={handleAdd}
                 disabled={isOutOfStock}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${

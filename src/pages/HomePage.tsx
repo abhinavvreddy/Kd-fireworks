@@ -210,7 +210,7 @@ export const HomePage: React.FC = () => {
             to="/catalogue"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 font-mono uppercase tracking-wider"
           >
-            <span>View Full Catalogue ({featuredProducts.length ? '8+ SKUs' : ''})</span>
+            <span>View Full Catalogue</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -430,18 +430,25 @@ export class ApiClient {
     };
     items: Array<{ productId: string; quantity: number }>;
   }): Promise<Order> {
-    if (this.isLiveBackend) {
+    const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+    try {
       const res = await fetch(`${this.baseUrl}/orders`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload),
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Failed to place order');
+      if (res.ok) {
+        const data = await res.json();
+        this.isLiveBackend = true;
+        return data.order;
       }
-      const data = await res.json();
-      return data.order;
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to place order');
+    } catch (e: any) {
+      if (isProd || this.isLiveBackend) {
+        throw new Error(e.message || 'Unable to place order right now. Please try again or call store support at +91 8121317368.');
+      }
     }
 
     // Local simulation with full atomic stock validation
@@ -847,7 +854,7 @@ export class ApiClient {
       locality: commData.locality || 'Attapur, Hyderabad',
       allowedBlocks: commData.allowedBlocks || ['Block A'],
       minimumOrderAmount: Number(commData.minimumOrderAmount) || 1000,
-      deliveryFee: Number(commData.deliveryFee) || 50,
+      deliveryFee: Number.isFinite(Number(commData.deliveryFee)) ? Number(commData.deliveryFee) : 0,
       isActive: commData.isActive !== false,
     };
     comms.unshift(newComm);

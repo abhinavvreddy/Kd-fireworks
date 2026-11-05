@@ -105,6 +105,9 @@ export const Footer: React.FC = () => {
               <li>• Inspect packages with delivery agent upon COD</li>
               <li>• Compliant with Indian Explosives Act</li>
               <li>• Strict prohibition of sale to minors</li>
+              <li className="pt-1 text-slate-400">
+                • <strong className="text-slate-300">Privacy Notice (DPDP Act 2023):</strong> Resident details (name, phone, tower/flat) are used solely for gated community doorstep delivery & order receipts. We never share or sell personal data.
+              </li>
             </ul>
           </div>
 

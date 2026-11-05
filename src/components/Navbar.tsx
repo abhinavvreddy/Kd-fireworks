@@ -15,6 +15,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext.tsx';
+import { pluralItems } from '../utils/pureLogic.ts';
 
 interface NavbarProps {
   onOpenBackendInfo?: () => void;
@@ -78,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
               aria-expanded={isMobileMenuOpen}
             >
               <Menu className="w-4 h-4 text-amber-400" />
-              <span className="text-[11px] font-bold text-slate-100 tracking-tight">Browse</span>
+              <span className="hidden min-[400px]:inline text-[11px] font-bold text-slate-100 tracking-tight">Browse</span>
             </button>
 
             {/* BRAND WORDMARK (Desktop & Mobile) */}
@@ -94,8 +95,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="leading-tight">
-                <div className="text-xs sm:text-xl font-serif font-bold tracking-wide sm:tracking-wider gold-gradient-text uppercase">
+              <div className="leading-tight min-w-0">
+                <div className="text-xs sm:text-xl font-serif font-bold tracking-wide sm:tracking-wider gold-gradient-text uppercase truncate max-w-[130px] min-[420px]:max-w-none sm:max-w-none">
                   KanakaDurga FireWorks
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 text-[9px] sm:text-[10px] text-amber-300/80 tracking-wider font-mono mt-0.5">
@@ -177,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
             <Link
               to="/cart"
               className="relative px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 rounded-lg hover:from-amber-300 hover:to-amber-400 transition-all shadow-md shadow-amber-950/40 flex items-center gap-1 sm:gap-2 whitespace-nowrap shrink-0 active:scale-95"
-              aria-label={`View Shopping Bag with ${cartCount} items`}
+              aria-label={`View Shopping Bag with ${pluralItems(cartCount)}`}
             >
               <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950" />
               <span className="hidden sm:inline">Bag</span>

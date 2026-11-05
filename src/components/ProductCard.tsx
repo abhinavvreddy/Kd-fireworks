@@ -17,8 +17,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   cartQuantity,
 }) => {
   const discount = calculateDiscount(product.mrp, product.sellingPrice);
-  const isOutOfStock = product.stockQuantity <= 0;
-  const isLowStock = !isOutOfStock && product.stockQuantity <= product.lowStockThreshold;
+  const hasFiniteStock = Number.isFinite(product.stockQuantity);
+  const isOutOfStock = hasFiniteStock && product.stockQuantity <= 0;
+  const isLowStock = !isOutOfStock && hasFiniteStock && product.stockQuantity <= (product.lowStockThreshold ?? 5);
 
   // Category specific icon colors
   const getCategoryGradient = (cat: string) => {
@@ -141,6 +142,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Add to Cart button */}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               if (!isOutOfStock) {

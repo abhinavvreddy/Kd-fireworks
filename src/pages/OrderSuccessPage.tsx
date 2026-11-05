@@ -4,7 +4,7 @@ import { Sparkles, MapPin, Banknote, ArrowRight, Package, CheckCircle2 } from 'l
 import { Order } from '../types/index.ts';
 import { api } from '../api/client.ts';
 import { useStore } from '../context/StoreContext.tsx';
-import { formatRupee, formatDateTime } from '../utils/pureLogic.ts';
+import { formatRupee, formatDateTime, pluralItems } from '../utils/pureLogic.ts';
 
 export const OrderSuccessPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -87,7 +87,7 @@ export const OrderSuccessPage: React.FC = () => {
           {order.orderNumber}
         </div>
         <span className="text-xs text-slate-400 font-mono">
-          {formatDateTime(order.createdAt)} · {order.items.length} items
+          {formatDateTime(order.createdAt)} · {pluralItems(order.items.length)}
         </span>
       </div>
 

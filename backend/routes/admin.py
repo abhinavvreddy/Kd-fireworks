@@ -1,4 +1,5 @@
 import os
+import logging
 import datetime
 from flask import Blueprint, request, jsonify, g
 from bson import ObjectId
@@ -7,6 +8,8 @@ from middleware.auth import require_admin
 from services.inventory_service import InventoryService
 from services.order_service import OrderService
 from config import Config
+
+logger = logging.getLogger("kanakadurga_backend")
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -61,8 +64,10 @@ def admin_upload_image():
             "message": "Image uploaded successfully",
             "url": secure_url
         }), 201
-    except Exception as e:
-        return jsonify({"error": f"Failed to upload image to Cloudinary: {str(e)}"}), 500
+    except Exception:
+        # Security: log details server-side only; Cloudinary error payloads may contain credentials
+        logger.exception("Cloudinary image upload failed")
+        return jsonify({"error": "Failed to upload image. Please try again."}), 500
 
 @admin_bp.route("/dashboard", methods=["GET"])
 @require_admin
@@ -520,8 +525,10 @@ def admin_update_order_status(order_id):
         }), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": f"Failed to update status: {str(e)}"}), 500
+    except Exception:
+        # Security: log details server-side only; never leak exception text to clients
+        logger.exception("Admin order status update failed")
+        return jsonify({"error": "Failed to update status. Please try again."}), 500
 
 # ----------------- Order Notifications ----------------- #
 

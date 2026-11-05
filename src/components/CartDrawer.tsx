@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag, Banknote, AlertCircle, ArrowRight } from 'lucide-react';
 import { CartItem, Community } from '../types/index.ts';
-import { calculateCartTotals, formatRupee } from '../utils/pureLogic.ts';
+import { calculateCartTotals, formatRupee, pluralItems } from '../utils/pureLogic.ts';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -46,7 +46,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-amber-400" />
             <h2 className="text-lg font-serif font-bold text-white">Your Shopping Bag</h2>
-            <span className="text-xs text-amber-300 font-mono">({itemCount} items)</span>
+            <span className="text-xs text-amber-300 font-mono">({pluralItems(itemCount)})</span>
           </div>
           <button
             onClick={onClose}
@@ -82,8 +82,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-3.5"
               >
                 {/* Product thumbnail */}
-                <div className="w-14 h-14 rounded-lg bg-slate-950 border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden text-center text-[10px] font-mono text-amber-300/80 p-1">
-                  {product.category.substring(0, 8)}
+                <div className="w-14 h-14 rounded-lg bg-slate-950 border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden text-center text-[10px] font-mono text-amber-300/80 p-0.5 relative">
+                  {product.images && product.images.length > 0 && product.images[0].startsWith('http') ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover rounded-md"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <span>{product.category.substring(0, 8)}</span>
+                  )}
                 </div>
 
                 {/* Details */}
@@ -148,7 +160,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             {/* Calculations Breakdown */}
             <div className="space-y-1.5 text-xs text-slate-300">
               <div className="flex justify-between">
-                <span>Subtotal ({itemCount} items)</span>
+                <span>Subtotal ({pluralItems(itemCount)})</span>
                 <span className="font-mono tabular-nums text-white">{formatRupee(subtotal)}</span>
               </div>
               <div className="flex justify-between">

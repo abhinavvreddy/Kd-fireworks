@@ -3,8 +3,33 @@ from bson import ObjectId
 from database import get_db
 from middleware.auth import require_auth
 from services.order_service import OrderService
+import logging
+
+logger = logging.getLogger("kanakadurga_backend")
 
 orders_bp = Blueprint("orders", __name__)
+
+
+def _validate_order_payload(payload):
+    """
+    Returns an error message when the order payload is malformed, else None.
+    Fails fast with a 400 instead of letting a bad shape crash into a 500.
+    """
+    address = payload.get("deliveryAddress")
+    if not isinstance(address, dict):
+        return "Delivery address must include the resident's name, phone, block and flat details."
+
+    items = payload.get("items")
+    if not isinstance(items, list) or len(items) == 0:
+        return "Your order must include at least one item."
+    for item in items:
+        if not isinstance(item, dict) or not item.get("productId"):
+            return "Each order item must reference a product."
+        quantity = item.get("quantity")
+        if not isinstance(quantity, int) or isinstance(quantity, bool) or quantity <= 0:
+            return "Each order item requires a quantity of at least 1."
+    return None
+
 
 @orders_bp.route("", methods=["POST"])
 @require_auth
@@ -14,6 +39,9 @@ def create_customer_order():
     Validates community, blocks, server prices, and atomic inventory.
     """
     payload = request.get_json() or {}
+    validation_error = _validate_order_payload(payload)
+    if validation_error:
+        return jsonify({"error": validation_error}), 400
     try:
         created_order = OrderService.create_order(g.user_id, payload)
         # Format response
@@ -25,8 +53,10 @@ def create_customer_order():
         }), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": f"Failed to place order: {str(e)}"}), 500
+    except Exception:
+        # Security: log details server-side only; never leak exception text to clients
+        logger.exception("Order placement failed for user %s", g.user_id)
+        return jsonify({"error": "We could not place your order. Please review your details and try again."}), 500
 
 @orders_bp.route("/me", methods=["GET"])
 @require_auth

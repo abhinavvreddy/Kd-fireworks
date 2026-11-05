@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, MapPin, Banknote, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { CartItem, Community, User } from '../types/index.ts';
-import { calculateCartTotals, formatRupee, validateCommunityAndBlock } from '../utils/pureLogic.ts';
+import { calculateCartTotals, formatRupee, validateCommunityAndBlock, pluralItems } from '../utils/pureLogic.ts';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -315,7 +315,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           {/* Order Summary & Pricing */}
           <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2 text-xs text-slate-300">
             <div className="font-semibold text-white mb-2 pb-1 border-b border-slate-800">
-              Order Bill Summary ({items.length} items)
+              Order Bill Summary ({pluralItems(items.length)})
             </div>
             <div className="flex justify-between">
               <span>Items Subtotal</span>

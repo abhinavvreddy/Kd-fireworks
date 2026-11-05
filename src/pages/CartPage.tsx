@@ -13,7 +13,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext.tsx';
-import { calculateCartTotals, formatRupee } from '../utils/pureLogic.ts';
+import { calculateCartTotals, formatRupee, pluralItems } from '../utils/pureLogic.ts';
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,8 +26,10 @@ export const CartPage: React.FC = () => {
   const selectedCommunity =
     communities.find((c) => c.id === selectedCommId) || communities[0];
 
-  const minOrder = selectedCommunity?.minimumOrderAmount || 1000;
-  const deliveryFee = selectedCommunity?.deliveryFee || 50;
+  const minOrder = selectedCommunity?.minimumOrderAmount ?? 1000;
+  // Use nullish coalescing: communities with free delivery legitimately have deliveryFee === 0,
+  // and `|| 50` was silently charging/displaying a ₹50 fee the backend never applies.
+  const deliveryFee = selectedCommunity?.deliveryFee ?? 0;
 
   const { subtotal, total, itemCount, meetsMinimum, shortfall } = calculateCartTotals(
     cartItems,
@@ -95,8 +97,20 @@ export const CartPage: React.FC = () => {
             {cartItems.map(({ product, quantity }) => (
               <div key={product.id} className="p-4 sm:p-5 flex items-center gap-4">
                 {/* Thumbnail */}
-                <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 overflow-hidden p-1 text-center font-mono text-[10px] text-amber-300">
-                  {product.category}
+                <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 overflow-hidden p-0.5 text-center font-mono text-[10px] text-amber-300 relative">
+                  {product.images && product.images.length > 0 && product.images[0].startsWith('http') ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <span>{product.category}</span>
+                  )}
                 </div>
 
                 {/* Details */}
@@ -216,7 +230,7 @@ export const CartPage: React.FC = () => {
           {/* Order Bill Breakdown */}
           <div className="space-y-2 text-xs text-slate-300 border-t border-slate-800 pt-4">
             <div className="flex justify-between">
-              <span>Subtotal ({itemCount} items)</span>
+              <span>Subtotal ({pluralItems(itemCount)})</span>
               <span className="font-mono text-white tabular-nums">{formatRupee(subtotal)}</span>
             </div>
             <div className="flex justify-between">

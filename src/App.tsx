@@ -17,7 +17,11 @@ import { OrderSuccessPage } from './pages/OrderSuccessPage.tsx';
 import { OrderTrackingPage } from './pages/OrderTrackingPage.tsx';
 import { CommunitiesPage } from './pages/CommunitiesPage.tsx';
 import { AccountPage } from './pages/AccountPage.tsx';
-import { AdminPage } from './pages/AdminPage.tsx';
+
+// Lazy load admin console to optimize initial bundle size for shoppers
+const AdminPage = React.lazy(() =>
+  import('./pages/AdminPage.tsx').then((m) => ({ default: m.AdminPage }))
+);
 
 function AppContent() {
   const [isBackendInfoOpen, setIsBackendInfoOpen] = useState(false);
@@ -45,7 +49,21 @@ function AppContent() {
           <Route path="/communities" element={<CommunitiesPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/login" element={<AccountPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route
+            path="/admin"
+            element={
+              <React.Suspense
+                fallback={
+                  <div className="min-h-[50vh] flex flex-col items-center justify-center p-12 text-center">
+                    <div className="w-10 h-10 rounded-full border-2 border-amber-400 border-t-transparent animate-spin mb-4" />
+                    <span className="text-xs text-amber-300 font-mono">Loading Secure Admin Console...</span>
+                  </div>
+                }
+              >
+                <AdminPage />
+              </React.Suspense>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

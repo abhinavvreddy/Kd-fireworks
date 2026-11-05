@@ -18,7 +18,20 @@ def create_app():
 
     # CORS configuration: supports single origin, comma-separated production domains, and local development
     raw_origins = [o.strip() for o in Config.FRONTEND_ORIGIN.split(",") if o.strip()] if Config.FRONTEND_ORIGIN else []
-    allowed_origins = list(set(raw_origins + ["http://localhost:3000", "http://127.0.0.1:3000"]))
+    # A wildcard origin must never be combined with credentialed CORS (browsers reject it,
+    # and reflecting arbitrary origins with supports_credentials=True is an OWASP risk).
+    # Resolve '*' to the canonical frontend URL so the allowlist stays explicit.
+    if "*" in raw_origins:
+        raw_origins.remove("*")
+        resolved_frontend = Config.get_frontend_url()
+        if resolved_frontend:
+            raw_origins.append(resolved_frontend)
+    allowed_origins = list(set(raw_origins + [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]))
     CORS(app, origins=allowed_origins, supports_credentials=True, allow_headers=["Content-Type", "Authorization"])
 
     # Initialize DB indexes and initial data if empty
