@@ -1,8 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Sparkles, MapPin, ShieldAlert } from 'lucide-react';
 
 export const Footer: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <footer className="bg-[#070D1E] border-t border-slate-800 text-slate-400 text-xs py-6 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md overflow-hidden border border-amber-400/40 bg-slate-950 shrink-0">
+              <img
+                src="/assets/aistudio/image_9c781e1e.png"
+                alt="KanakaDurga FireWorks"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <span className="text-white font-semibold">KanakaDurga FireWorks · Store Management Console</span>
+              <span className="text-[11px] text-slate-500 block font-mono">
+                Attapur, Hyderabad Dispatch Office · Operations & Delivery Control
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              MongoDB Atlas Live
+            </span>
+            <span>·</span>
+            <span>Resend Alerts</span>
+            <span>·</span>
+            <span>Cloudinary CDN</span>
+          </div>
+
+          <div className="text-[11px] text-slate-500 font-mono">
+            © 2026 KanakaDurga FireWorks · Admin Access Only
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer id="safety-section" className="bg-[#070D1E] border-t border-amber-500/15 text-slate-400 text-xs mt-20">
       {/* Safety Notice Banner */}

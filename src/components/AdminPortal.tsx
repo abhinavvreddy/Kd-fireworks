@@ -24,6 +24,8 @@ import {
   BellRing,
   Check,
   CheckCheck,
+  Download,
+  Printer,
 } from 'lucide-react';
 import {
   Product,
@@ -292,6 +294,36 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     } catch (err) {
       console.warn('Failed to toggle notification status:', err);
     }
+  };
+
+  const handleExportOrdersCSV = () => {
+    if (!orders || orders.length === 0) {
+      setErrorMsg('No orders available to export.');
+      return;
+    }
+    const headers = ['Order Number', 'Date', 'Status', 'Customer Name', 'Phone', 'Community', 'Block', 'Flat', 'Landmark', 'Total COD (INR)', 'Items Count'];
+    const rows = orders.map((o) => [
+      `"${o.orderNumber}"`,
+      `"${formatDateTime(o.createdAt)}"`,
+      `"${o.orderStatus}"`,
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      `"${o.customerPhone || ''}"`,
+      `"${(o.deliveryAddress?.communityName || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress?.block || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress?.flat || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress?.landmark || '').replace(/"/g, '""')}"`,
+      o.totalAmount,
+      o.items?.reduce((acc, i) => acc + (i.quantity || 0), 0) || 0,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `kd-fireworks-orders-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setSuccessMsg(`Exported ${orders.length} orders to CSV successfully.`);
   };
 
   // Dedicated Admin Login State
@@ -777,7 +809,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           }`}
         >
           <Truck className="w-4 h-4" />
-          <span>Orders Pipeline ({orders.length})</span>
+          <span>Order Pipeline ({orders.length})</span>
           {unreadCount > 0 && (
             <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-rose-600 text-white">
               {unreadCount} new
@@ -953,16 +985,28 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               ))}
             </div>
 
-            {/* Search */}
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="text"
-                placeholder="Search order #, customer, phone..."
-                value={orderSearch}
-                onChange={(e) => setOrderSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
-              />
+            {/* Search & Export CSV */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Search order #, customer, phone..."
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleExportOrdersCSV}
+                className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-amber-400/50 text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors shrink-0 active:scale-95 cursor-pointer"
+                title="Download current orders as CSV spreadsheet"
+              >
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden min-[480px]:inline">Export CSV</span>
+              </button>
             </div>
           </div>
 
@@ -1518,10 +1562,22 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </span>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
               <button
+                type="button"
+                onClick={() => {
+                  window.print();
+                }}
+                className="px-3.5 py-2 rounded-lg bg-amber-400 text-slate-950 hover:bg-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors active:scale-95 cursor-pointer"
+                title="Print delivery slip / customer bill"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Dispatch Slip</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
               >
                 Close
               </button>

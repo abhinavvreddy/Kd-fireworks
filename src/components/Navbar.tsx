@@ -21,10 +21,11 @@ interface NavbarProps {
   onOpenBackendInfo?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = () => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenBackendInfo }) => {
   const location = useLocation();
   const { cartCount, currentUser, logout } = useStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Close mobile drawer on route navigation
   useEffect(() => {
@@ -51,6 +52,88 @@ export const Navbar: React.FC<NavbarProps> = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // When on Admin routes, render specialized Store Management header with zero customer distractions
+  if (isAdminRoute) {
+    return (
+      <header className="sticky top-0 z-40 bg-[#0B132B]/95 backdrop-blur-md border-b border-amber-500/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+          {/* Brand & Console Tag */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg overflow-hidden border border-amber-400/50 bg-slate-950 shrink-0 shadow-md">
+              <img
+                src="/assets/aistudio/image_9c781e1e.png"
+                alt="KanakaDurga FireWorks"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm sm:text-base font-serif font-bold gold-gradient-text uppercase tracking-wide">
+                  KanakaDurga Store Management
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                  Admin Console
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono hidden sm:block">
+                Attapur, Hyderabad Dispatch Office · Operations & Orders Portal
+              </span>
+            </div>
+          </div>
+
+          {/* Right Tools: MongoDB Atlas Status, Switcher to Storefront, Admin Identity, Logout */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live MongoDB Atlas Connection Status */}
+            <button
+              type="button"
+              onClick={onOpenBackendInfo}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono hover:bg-emerald-900/50 transition-colors cursor-pointer"
+              title="Click to inspect MongoDB Atlas & backend connection"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>MongoDB Atlas Connected</span>
+            </button>
+
+            {/* Switch to Public Customer Storefront */}
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-300 bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 hover:text-white transition-all active:scale-95 shadow-sm"
+              title="Switch to customer storefront"
+            >
+              <span className="hidden sm:inline">View Customer Storefront</span>
+              <span className="sm:hidden">Storefront</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
+
+            {/* Admin identity & Sign Out */}
+            {currentUser?.role === 'admin' ? (
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
+                  <div className="w-2 h-2 rounded-full bg-amber-400" />
+                  <span className="truncate max-w-[140px]">
+                    {currentUser.email || currentUser.displayName}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await logout();
+                    window.location.href = '/';
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/30 hover:bg-rose-950/70 hover:border-rose-400 transition-all active:scale-95 cursor-pointer"
+                  title="Sign out from Admin Console"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <>
