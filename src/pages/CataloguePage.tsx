@@ -20,7 +20,7 @@ const CATEGORIES = [
 export const CataloguePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { addToCart, cartItems, cartCount } = useStore();
+  const { addToCart, updateCartQuantity, cartItems, cartCount } = useStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,6 +175,7 @@ export const CataloguePage: React.FC = () => {
                   key={product.id}
                   product={product}
                   onAddToCart={(p) => addToCart(p, 1)}
+                  onDecrement={(p) => updateCartQuantity(p.id, (inCart?.quantity || 1) - 1)}
                   onViewDetails={(p) => navigate(`/products/${p.id}`)}
                   cartQuantity={inCart ? inCart.quantity : 0}
                 />

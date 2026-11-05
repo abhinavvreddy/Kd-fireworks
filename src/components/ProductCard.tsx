@@ -1,11 +1,12 @@
 import React from 'react';
-import { Plus, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { Plus, Minus, Check, AlertCircle, Sparkles } from 'lucide-react';
 import { Product } from '../types/index.ts';
 import { formatRupee, calculateDiscount } from '../utils/pureLogic.ts';
 
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
+  onDecrement?: (product: Product) => void;
   onViewDetails: (product: Product) => void;
   cartQuantity: number;
 }
@@ -13,6 +14,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onAddToCart,
+  onDecrement,
   onViewDetails,
   cartQuantity,
 }) => {
@@ -140,37 +142,65 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           </div>
 
-          {/* Add to Cart button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isOutOfStock) {
-                onAddToCart(product);
-              }
-            }}
-            disabled={isOutOfStock}
-            className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              isOutOfStock
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                : cartQuantity > 0
-                ? 'bg-amber-400 text-slate-950 hover:bg-amber-300 shadow-md shadow-amber-950/40'
-                : 'bg-slate-800 text-amber-300 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30'
-            }`}
-            aria-label={`Add ${product.name} to cart`}
-          >
-            {cartQuantity > 0 ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>{cartQuantity} in Bag</span>
-              </>
-            ) : (
-              <>
+          {/* Add to Cart or Stepper */}
+          {cartQuantity > 0 ? (
+            <div
+              className="flex items-center rounded-lg bg-amber-400 text-slate-950 shadow-md shadow-amber-950/40 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDecrement?.(product);
+                }}
+                className="px-2.5 py-1.5 hover:bg-amber-300 text-slate-950 transition-colors flex items-center justify-center cursor-pointer active:scale-90"
+                aria-label={`Decrease ${product.name} quantity or remove from bag`}
+                title="Decrease / Remove from Bag"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+
+              <span className="px-1.5 py-1 text-xs font-bold font-mono min-w-[20px] text-center select-none">
+                {cartQuantity} in Bag
+              </span>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isOutOfStock) {
+                    onAddToCart(product);
+                  }
+                }}
+                className="px-2.5 py-1.5 hover:bg-amber-300 text-slate-950 transition-colors flex items-center justify-center cursor-pointer active:scale-90"
+                aria-label={`Add another ${product.name} to bag`}
+                title="Add more"
+              >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add</span>
-              </>
-            )}
-          </button>
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isOutOfStock) {
+                  onAddToCart(product);
+                }
+              }}
+              disabled={isOutOfStock}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                isOutOfStock
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-slate-800 text-amber-300 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 cursor-pointer active:scale-95'
+              }`}
+              aria-label={`Add ${product.name} to cart`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

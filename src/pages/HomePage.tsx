@@ -17,7 +17,7 @@ import { formatRupee } from '../utils/pureLogic.ts';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { addToCart, cartItems, communities, refreshCommunities } = useStore();
+  const { addToCart, updateCartQuantity, cartItems, communities, refreshCommunities } = useStore();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -232,6 +232,7 @@ export const HomePage: React.FC = () => {
                     key={product.id}
                     product={product}
                     onAddToCart={(p) => addToCart(p, 1)}
+                    onDecrement={(p) => updateCartQuantity(p.id, (inCart?.quantity || 1) - 1)}
                     onViewDetails={(p) => navigate(`/products/${p.id}`)}
                     cartQuantity={inCart ? inCart.quantity : 0}
                   />
